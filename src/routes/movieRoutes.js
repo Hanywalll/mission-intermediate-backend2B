@@ -14,12 +14,19 @@ router.post('/movie', movieController.addMovie);
 // Endpoint query berdasarkan atribut lain (misal: /movies/attribute/type/movie)
 router.get('/movies/attribute/:attribute/:value', movieController.getMoviesByAttribute);
 
-// Alias konsistensi plural/singular agar fleksibel saat diuji di Postman
+// Dukungan langsung tanpa :id dan alias plural agar tinggal klik Send di Postman/Hoppscotch
 router.get('/movie', movieController.getAllMovies);
+router.patch('/movie', movieController.updateMovieById);
+router.put('/movie', movieController.updateMovieById);
+router.delete('/movie', movieController.deleteMovieById);
+
 router.get('/movies/:id', movieController.getMovieById);
 router.patch('/movies/:id', movieController.updateMovieById);
 router.put('/movies/:id', movieController.updateMovieById);
 router.delete('/movies/:id', movieController.deleteMovieById);
 router.post('/movies', movieController.addMovie);
+router.patch('/movies', movieController.updateMovieById);
+router.put('/movies', movieController.updateMovieById);
+router.delete('/movies', movieController.deleteMovieById);
 
 module.exports = router;

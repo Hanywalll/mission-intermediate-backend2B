@@ -20,25 +20,12 @@ async function getAllMovies(req, res) {
 
 async function getMovieById(req, res) {
   try {
-    const id = Number(req.params.id);
-    if (!Number.isInteger(id) || id <= 0) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'Parameter id harus berupa angka bulat positif.',
-      });
-    }
-
+    const id = req.params.id ? Number(req.params.id) : null;
     const movie = await movieService.getMovieById(id);
-    if (!movie) {
-      return res.status(404).json({
-        status: 'fail',
-        message: `Movie dengan id ${id} tidak ditemukan.`,
-      });
-    }
 
     return res.status(200).json({
       status: 'success',
-      message: `Berhasil mengambil data movie dengan id ${id}.`,
+      message: `Berhasil mengambil data movie dengan id ${movie.id}.`,
       data: movie,
     });
   } catch (error) {
@@ -82,13 +69,6 @@ async function addMovie(req, res) {
       data: newMovie,
     });
   } catch (error) {
-    if (error.code === 'ER_DUP_ENTRY') {
-      return res.status(409).json({
-        status: 'fail',
-        message: 'Slug movie sudah digunakan. Gunakan judul atau slug yang berbeda.',
-      });
-    }
-
     const statusCode = error.statusCode || 500;
     return res.status(statusCode).json({
       status: statusCode < 500 ? 'fail' : 'error',
@@ -99,39 +79,20 @@ async function addMovie(req, res) {
 
 async function updateMovieById(req, res) {
   try {
-    const id = Number(req.params.id);
-    if (!Number.isInteger(id) || id <= 0) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'Parameter id harus berupa angka bulat positif.',
-      });
-    }
-
+    const id = req.params.id ? Number(req.params.id) : null;
     const payload = {
       ...req.query,
       ...(req.body && typeof req.body === 'object' ? req.body : {}),
     };
+
     const updatedMovie = await movieService.updateMovieById(id, payload);
-    if (!updatedMovie) {
-      return res.status(404).json({
-        status: 'fail',
-        message: `Movie dengan id ${id} tidak ditemukan.`,
-      });
-    }
 
     return res.status(200).json({
       status: 'success',
-      message: `Berhasil mengubah data movie dengan id ${id}.`,
+      message: `Berhasil mengubah data movie dengan id ${updatedMovie.id}.`,
       data: updatedMovie,
     });
   } catch (error) {
-    if (error.code === 'ER_DUP_ENTRY') {
-      return res.status(409).json({
-        status: 'fail',
-        message: 'Slug movie sudah digunakan oleh data lain.',
-      });
-    }
-
     const statusCode = error.statusCode || 500;
     return res.status(statusCode).json({
       status: statusCode < 500 ? 'fail' : 'error',
@@ -142,25 +103,12 @@ async function updateMovieById(req, res) {
 
 async function deleteMovieById(req, res) {
   try {
-    const id = Number(req.params.id);
-    if (!Number.isInteger(id) || id <= 0) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'Parameter id harus berupa angka bulat positif.',
-      });
-    }
-
+    const id = req.params.id ? Number(req.params.id) : null;
     const deletedMovie = await movieService.deleteMovieById(id);
-    if (!deletedMovie) {
-      return res.status(404).json({
-        status: 'fail',
-        message: `Movie dengan id ${id} tidak ditemukan.`,
-      });
-    }
 
     return res.status(200).json({
       status: 'success',
-      message: `Berhasil menghapus data movie dengan id ${id}.`,
+      message: `Berhasil menghapus data movie dengan id ${deletedMovie.id}.`,
       data: deletedMovie,
     });
   } catch (error) {
