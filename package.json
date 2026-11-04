@@ -1,0 +1,31 @@
+{
+  "name": "mission-intermediate-backend2b",
+  "version": "1.0.0",
+  "description": "Mission Intermediate Backend 2B - Node.js, Express.js & MySQL REST API (Chill Movie App)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "db:init": "node src/database/init.js"
+  },
+  "keywords": [
+    "nodejs",
+    "expressjs",
+    "mysql",
+    "rest-api",
+    "dml",
+    "chill-movie-app"
+  ],
+  "author": "Muhammad Burhanudin",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.22.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

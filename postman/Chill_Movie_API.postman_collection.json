@@ -1,0 +1,142 @@
+{
+  "info": {
+    "name": "Mission Intermediate Backend 2B - Chill Movie App API",
+    "description": "Koleksi pengujian REST API menggunakan Node.js, Express.js, dan MySQL (DML: SELECT, INSERT, UPDATE, DELETE) untuk aplikasi Chill Movie.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. GET All Movies (/movies)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/movies",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "movies"
+          ]
+        },
+        "description": "Mengambil seluruh daftar movie menggunakan service SELECT *."
+      }
+    },
+    {
+      "name": "2. GET Movie By ID (/movie/:id)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/movie/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "movie",
+            "1"
+          ]
+        },
+        "description": "Mengambil satu data movie spesifik berdasarkan ID menggunakan service SELECT by Id."
+      }
+    },
+    {
+      "name": "3. GET Movies By Attribute (/movies/attribute/:attribute/:value)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/movies/attribute/type/movie",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "movies",
+            "attribute",
+            "type",
+            "movie"
+          ]
+        },
+        "description": "Mengambil data movie berdasarkan atribut lain (contoh: type = movie)."
+      }
+    },
+    {
+      "name": "4. POST Add New Movie (/movie)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Interstellar\",\n  \"slug\": \"interstellar\",\n  \"synopsis\": \"Tim penjelajah melakukan perjalanan melalui lubang cacing di luar angkasa dalam upaya untuk memastikan kelangsungan hidup umat manusia.\",\n  \"type\": \"movie\",\n  \"release_year\": 2014,\n  \"age_rating\": \"13+\",\n  \"poster_url\": \"https://images.chill.com/posters/interstellar.jpg\",\n  \"trailer_url\": \"https://videos.chill.com/trailers/interstellar.mp4\",\n  \"rating\": 4.9,\n  \"is_premium\": true,\n  \"is_published\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/movie",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "movie"
+          ]
+        },
+        "description": "Menambahkan data movie baru menggunakan service INSERT (ADD)."
+      }
+    },
+    {
+      "name": "5. PATCH Update Movie By ID (/movie/:id)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Interstellar (Remastered Edition)\",\n  \"rating\": 5.0,\n  \"is_premium\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/movie/6",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "movie",
+            "6"
+          ]
+        },
+        "description": "Mengubah sebagian data movie secara spesifik berdasarkan ID menggunakan service UPDATE."
+      }
+    },
+    {
+      "name": "6. DELETE Movie By ID (/movie/:id)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/movie/6",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "movie",
+            "6"
+          ]
+        },
+        "description": "Menghapus data movie secara spesifik berdasarkan ID menggunakan service DELETE."
+      }
+    }
+  ]
+}
