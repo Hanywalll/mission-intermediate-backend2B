@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const movieRoutes = require('./routes/movieRoutes');
@@ -8,7 +9,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
+app.use('/postman', express.static(path.join(__dirname, '../postman')));
+app.use(express.static(path.join(__dirname, '../public')));
+
+app.get('/api/info', (req, res) => {
   res.status(200).json({
     status: 'success',
     message: 'Chill Movie App REST API - Mission Intermediate Backend 2B',

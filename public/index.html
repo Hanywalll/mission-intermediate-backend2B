@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chill Movie App REST API Workbench - Mission Intermediate Backend 2B</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Lewati ke konten utama</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <div class="brand-mark" aria-hidden="true">[LOGO]</div>
+        <div>
+          <h1 class="site-title">Chill Movie REST API &amp; DML Workbench</h1>
+          <p class="site-subtitle">Mission Intermediate Backend 2B - Database: <code>chill_movie_db</code> (Tabel: <code>films</code>) - Draft without direction</p>
+        </div>
+      </div>
+
+      <nav class="header-actions" aria-label="Navigasi dan utilitas halaman">
+        <a href="#catalog-section" class="btn btn-secondary">Katalog Film</a>
+        <a href="#form-section" class="btn btn-secondary">Form Tambah / Ubah</a>
+        <a href="#inspector-section" class="btn btn-secondary">Inspector JSON</a>
+        <a href="/postman/Chill_Movie_API.postman_collection.json" download class="btn btn-secondary">Unduh Koleksi Postman</a>
+        <button type="button" id="theme-toggle" class="btn btn-secondary" aria-pressed="false">
+          Mode Gelap
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="workbench-layout">
+    <div class="left-column">
+      <section id="catalog-section" class="panel" aria-labelledby="catalog-heading">
+        <div class="panel-header">
+          <div>
+            <h2 id="catalog-heading" class="panel-title">1. Katalog Data Film (SELECT)</h2>
+            <p class="panel-desc">Menjalankan query <code>SELECT * FROM films</code>, <code>SELECT by Id</code>, atau filter berdasarkan atribut pada database MySQL.</p>
+          </div>
+          <button type="button" id="btn-refresh-all" class="btn btn-primary">
+            Jalankan GET /movies
+          </button>
+        </div>
+
+        <form id="filter-form" class="filter-bar" aria-label="Filter dan pencarian film">
+          <div class="field-group">
+            <label for="filter-search">Cari Judul</label>
+            <input type="search" id="filter-search" name="search" placeholder="Contoh: Batman">
+          </div>
+
+          <div class="field-group">
+            <label for="filter-type">Filter Tipe (Atribut)</label>
+            <select id="filter-type" name="type">
+              <option value="">Semua Tipe</option>
+              <option value="movie">movie</option>
+              <option value="series">series</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="filter-id">Ambil Spesifik ID</label>
+            <input type="number" id="filter-id" name="id" min="1" placeholder="Contoh: 1">
+          </div>
+
+          <div class="filter-actions">
+            <button type="submit" class="btn btn-secondary">Terapkan Query</button>
+            <button type="button" id="btn-reset-filter" class="btn btn-secondary">Reset Filter</button>
+          </div>
+        </form>
+
+        <div id="catalog-status-loading" class="state-box" role="status" aria-live="polite" hidden>
+          <p class="state-title">Memuat data film dari MySQL...</p>
+          <p class="state-desc">Sedang mengeksekusi permintaan <code>GET /movies</code> ke server Express.</p>
+        </div>
+
+        <div id="catalog-status-error" class="state-box state-error" role="alert" hidden>
+          <p class="state-title">Gagal memuat data dari server</p>
+          <p id="catalog-error-message" class="state-desc">Pastikan layanan MySQL aktif dan skema chill_movie_db sudah diinisialisasi.</p>
+          <button type="button" id="btn-retry-load" class="btn btn-primary">Muat Ulang Data</button>
+        </div>
+
+        <div id="catalog-status-empty" class="state-box" role="status" hidden>
+          <p class="state-title">Tidak ada data film yang cocok</p>
+          <p class="state-desc">Belum ada baris data untuk filter ini. Anda dapat mereset filter atau menambahkan film baru pada formulir di bawah.</p>
+          <div class="state-actions">
+            <button type="button" id="btn-empty-reset" class="btn btn-secondary">Tampilkan Semua Film</button>
+            <a href="#form-section" class="btn btn-primary">Buka Form Tambah Film</a>
+          </div>
+        </div>
+
+        <div id="movie-list" class="movie-list" role="list" aria-label="Daftar film dari database"></div>
+      </section>
+
+      <section id="form-section" class="panel" aria-labelledby="form-heading">
+        <div class="panel-header">
+          <div>
+            <h2 id="form-heading" class="panel-title">2. Form Manipulasi Data (INSERT &amp; UPDATE)</h2>
+            <p id="form-mode-desc" class="panel-desc">Mode aktif: <strong>Tambah Data Baru (POST /movie)</strong> menggunakan service <code>INSERT</code>.</p>
+          </div>
+          <button type="button" id="btn-cancel-edit" class="btn btn-secondary" hidden>
+            Batal Edit (Kembali ke Mode POST)
+          </button>
+        </div>
+
+        <div id="form-feedback" class="feedback-banner" role="status" aria-live="polite" hidden></div>
+
+        <form id="movie-form" novalidate>
+          <input type="hidden" id="movie-id" name="id" value="">
+
+          <div class="form-grid">
+            <div class="field-group">
+              <label for="input-title">Judul Film / Series <span class="required-mark">(Wajib)</span></label>
+              <input type="text" id="input-title" name="title" required placeholder="Masukkan judul film">
+            </div>
+
+            <div class="field-group">
+              <label for="input-slug">Slug URL (Opsional, otomatis dari judul)</label>
+              <input type="text" id="input-slug" name="slug" placeholder="contoh-judul-film">
+            </div>
+
+            <div class="field-group">
+              <label for="input-type">Tipe Konten</label>
+              <select id="input-type" name="type">
+                <option value="movie">movie</option>
+                <option value="series">series</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label for="input-year">Tahun Rilis</label>
+              <input type="number" id="input-year" name="release_year" min="1900" max="2100" value="2024" required>
+            </div>
+
+            <div class="field-group">
+              <label for="input-age">Batas Usia (Age Rating)</label>
+              <select id="input-age" name="age_rating">
+                <option value="SU">SU</option>
+                <option value="13+" selected>13+</option>
+                <option value="17+">17+</option>
+                <option value="18+">18+</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label for="input-rating">Skor Rating (0.0 sampai 5.0)</label>
+              <input type="number" id="input-rating" name="rating" min="0" max="5" step="0.1" value="4.5">
+            </div>
+
+            <div class="field-group field-full">
+              <label for="input-poster">URL Poster</label>
+              <input type="url" id="input-poster" name="poster_url" placeholder="https://images.chill.com/posters/contoh.jpg">
+            </div>
+
+            <div class="field-group field-full">
+              <label for="input-trailer">URL Trailer (Opsional)</label>
+              <input type="url" id="input-trailer" name="trailer_url" placeholder="https://videos.chill.com/trailers/contoh.mp4">
+            </div>
+
+            <div class="field-group field-full">
+              <label for="input-synopsis">Sinopsis</label>
+              <textarea id="input-synopsis" name="synopsis" rows="3" placeholder="Tuliskan ringkasan cerita film atau series..."></textarea>
+            </div>
+
+            <div class="checkbox-row field-full">
+              <label class="checkbox-label" for="input-premium">
+                <input type="checkbox" id="input-premium" name="is_premium">
+                <span>Konten Paket Premium (is_premium)</span>
+              </label>
+
+              <label class="checkbox-label" for="input-published">
+                <input type="checkbox" id="input-published" name="is_published" checked>
+                <span>Status Tayang Aktif (is_published)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="btn-submit-form" class="btn btn-primary">
+              Simpan Movie Baru (POST /movie)
+            </button>
+            <button type="button" id="btn-fill-sample" class="btn btn-secondary">
+              Isi Contoh Data Uji
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <aside id="inspector-section" class="right-column" aria-labelledby="inspector-heading">
+      <div class="panel inspector-panel">
+        <div class="panel-header">
+          <div>
+            <h2 id="inspector-heading" class="panel-title">3. Live REST API &amp; SQL DML Inspector</h2>
+            <p class="panel-desc">Menampilkan detail request HTTP, query SQL DML yang dijalankan, dan response JSON asli dari server Express.</p>
+          </div>
+          <button type="button" id="btn-copy-json" class="btn btn-secondary">
+            Salin Response JSON
+          </button>
+        </div>
+
+        <dl class="inspector-meta">
+          <div class="meta-item">
+            <dt>Endpoint Terakhir</dt>
+            <dd><code id="meta-endpoint">GET /movies</code></dd>
+          </div>
+          <div class="meta-item">
+            <dt>Status HTTP</dt>
+            <dd><span id="meta-status" class="status-pill">200 OK</span></dd>
+          </div>
+          <div class="meta-item meta-full">
+            <dt>Representasi Query DML SQL</dt>
+            <dd><code id="meta-sql" class="sql-code">SELECT * FROM films ORDER BY id ASC;</code></dd>
+          </div>
+        </dl>
+
+        <div class="code-section">
+          <h3 class="code-heading">Request Payload (Body)</h3>
+          <pre id="inspector-request" class="code-block" tabindex="0">Tidak ada body payload (Request GET)</pre>
+        </div>
+
+        <div class="code-section">
+          <h3 class="code-heading">Response JSON Server</h3>
+          <pre id="inspector-response" class="code-block" tabindex="0">Memuat response dari server...</pre>
+        </div>
+
+        <div class="endpoint-reference">
+          <h3 class="code-heading">Daftar Endpoint Referensi Mission 2B</h3>
+          <ul class="endpoint-list">
+            <li><code>GET /movies</code> : Mengambil semua data film (SELECT *)</li>
+            <li><code>GET /movie/:id</code> : Mengambil 1 film berdasarkan ID (SELECT by Id)</li>
+            <li><code>GET /movies/attribute/:attr/:val</code> : Filter berdasarkan atribut lain</li>
+            <li><code>POST /movie</code> : Menambahkan film baru (INSERT)</li>
+            <li><code>PATCH /movie/:id</code> : Mengubah data film berdasarkan ID (UPDATE)</li>
+            <li><code>DELETE /movie/:id</code> : Menghapus data film berdasarkan ID (DELETE)</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <div id="delete-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc" hidden>
+    <div class="modal-card">
+      <h2 id="modal-title" class="panel-title">Konfirmasi Hapus Data (DELETE)</h2>
+      <p id="modal-desc" class="panel-desc">
+        Apakah Anda yakin ingin menghapus film <strong id="delete-target-title"></strong> (ID: <code id="delete-target-id"></code>)?
+        Tindakan ini akan menjalankan perintah <code>DELETE FROM films WHERE id = ?</code> secara permanen di database.
+      </p>
+      <div class="modal-actions">
+        <button type="button" id="btn-confirm-delete" class="btn btn-primary">
+          Ya, Jalankan DELETE
+        </button>
+        <button type="button" id="btn-cancel-delete" class="btn btn-secondary">
+          Batal (Esc)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
