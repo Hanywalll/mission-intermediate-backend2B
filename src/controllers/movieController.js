@@ -71,7 +71,11 @@ async function getMoviesByAttribute(req, res) {
 
 async function addMovie(req, res) {
   try {
-    const newMovie = await movieService.addMovie(req.body || {});
+    const payload = {
+      ...req.query,
+      ...(req.body && typeof req.body === 'object' ? req.body : {}),
+    };
+    const newMovie = await movieService.addMovie(payload);
     return res.status(201).json({
       status: 'success',
       message: 'Berhasil menambahkan data movie baru.',
@@ -103,7 +107,11 @@ async function updateMovieById(req, res) {
       });
     }
 
-    const updatedMovie = await movieService.updateMovieById(id, req.body || {});
+    const payload = {
+      ...req.query,
+      ...(req.body && typeof req.body === 'object' ? req.body : {}),
+    };
+    const updatedMovie = await movieService.updateMovieById(id, payload);
     if (!updatedMovie) {
       return res.status(404).json({
         status: 'fail',
